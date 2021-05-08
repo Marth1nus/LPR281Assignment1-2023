@@ -1,142 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Canvas demo</title>
-
-    
-    <script type="application/javascript" language="javascript" src="main.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JS Canvas demo</title>
+        
+        
+        <script type="application/javascript" language="javascript" src="main.js"></script>
+        
 </head>
 <body>
     <canvas width=400 height=400 id="canvas1">
-
+        
     </canvas>
-
+    
     <table>
         <tbody>
-            <tr>
+            <tr id = "Z">
                 <td>
-                    <select name="cars" id="cars">
-                        <option value="minz">Min Z</option>
-                        <option value="maxz">Max Z</option>
+                    <select id="minmax">
+                        <option value="min">Min Z</option>
+                        <option value="max">Max Z</option>
                     </select>
                 </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x1</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="minus">-</option>
-                        <option value="plus">+</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x2</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="largerequesl">>=</option>
-                        <option value="smallerequals"><=</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-            </tr>
-
-            <tr>
-                <td>
-                    c1
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x1</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="minus">-</option>
-                        <option value="plus">+</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x2</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="largerequesl">>=</option>
-                        <option value="smallerequals"><=</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    c2
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x1</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="minus">-</option>
-                        <option value="plus">+</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x2</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="largerequesl">>=</option>
-                        <option value="smallerequals"><=</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    c3
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x1</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="minus">-</option>
-                        <option value="plus">+</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
-                <td>x2</td>
-                <td>
-                    <select name="cars" id="cars">
-                        <option value="largerequesl">>=</option>
-                        <option value="smallerequals"><=</option>
-                    </select>
-                </td>
-                <td>
-                    <input type="text">
-                </td>
+                <td>=</td>
+                <td><input id="q1" type="number"></td><td>x1 + </td>
+                <td><input id="q2" type="number"></td><td>x2</td>
             </tr>
         </tbody>
     </table>
-
-    <input type="button" value="Add Constraint">
+    <table><tbody id = "ctbody"></tbody></table>
+    
+    <input type="button" value="Add Constraint" onclick = "add_constraint()">
     <input type="file" id="fileInput">
     <button onclick="loadInputValue()">Open</button>
+    <button onclick="draw()">Draw</button>
+    
 </body>
 </html>
