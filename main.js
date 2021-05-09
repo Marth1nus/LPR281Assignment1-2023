@@ -1,6 +1,7 @@
 /*
     TO DO :
-    constratints cause crash on : ( q1==0 & q2==0 ) or c==0
+    constratints cannot correctly handle always true or alwyas false conditions
+        example : 0*x1 + 0*x2 >= 0
 
 */
 
@@ -42,6 +43,8 @@ class vec2{
     normalise() { return new vec2(this.x, this.y).div_scalar(this.length()); }
 
     comp_sum() { return this.x + this.y; }
+
+    compair(r) { return this.x === r.x && this.y === r.y }
 }
 
 let user_constraints = [];
@@ -100,6 +103,25 @@ class constraint{
     }
 };
 
+function constraint_from_qqsc(_q1,_q2,esign,_c1){
+    const w = canvas.width;
+    const q1 = parseFloat(_q1);
+    const q2 = parseFloat(_q2);
+    const c1 = parseFloat(_c1);
+    const m = q1 / -q2;
+    const c = c1 / q2;
+    const d = (m === -Infinity) ? {
+        p1:new vec2(c1 / q1, -w),
+        p2:new vec2(c1 / q1, 2*w)
+    } : {
+        p1:new vec2(-w, m * (-w) + c),
+        p2:new vec2(2*w, m * (2*w) + c)
+    };
+    return new constraint(
+        esign, d.p1, d.p2, m, c
+    );
+}
+
 
 class contraint_row{
     constructor(tr){
@@ -110,32 +132,24 @@ class contraint_row{
         this.c     = tr.querySelector("#c");
         this.color = tr.querySelector("#clr");
         this.constraint = {};
+        this.consitant_result = null;
         this.update_line();
     }
 
     update_line(){
-        const w = canvas.width;
-        const q1 = parseFloat(this.q1.value);
-        const q2 = parseFloat(this.q2.value);
-        const c1 = parseFloat(this.c.value);
-        const x0 = new vec2(0, c1/q2);
-        const y0 = new vec2(c1/q1, 0);
-        const m = x0.y / -y0.x;
-        const c = x0.y;
-        const d = (m === -Infinity) ? {
-            p1:new vec2(y0.x, -w),
-            p2:new vec2(y0.x, 2*w)
-        } : {
-            p1:new vec2(-w, m * (-w) + c),
-            p2:new vec2(2*w, m * (2*w) + c)
-        };
-        return this.constraint = new constraint(
-            this.esign.value, d.p1, d.p2, m, c
+        this.constraint = constraint_from_qqsc(
+            this.q1.value,
+            this.q2.value,
+            this.esign.value,
+            this.c.value
         );
+        this.consitant_result = null;
     }
 }
 
 let canvas_constraints = []
+let canvas_offset = new vec2();
+let canvas_offset_temp = new vec2();
 
 window.onload = ()=>{
     canvas = document.getElementById("canvas1");
@@ -143,19 +157,32 @@ window.onload = ()=>{
 
     ctx.translate(0, canvas.height);
     ctx.scale(1, -1);
-
+    
     const w = canvas.width-10;
-    add_constraint(1,0,">=", 1, "#F00000");
-    add_constraint(1,0,"<=", w, "#00F000");
-    add_constraint(0,1,">=", 1, "#0000F0");
-    add_constraint(0,1,"<=", w, "#0F0F00");
-
     canvas_constraints = [
-    //new constraint(">=", new vec2(0,0), new vec2(0,w), -Infinity, 0),
-    //new constraint(">=", new vec2(0,0), new vec2(w,0), 0, 0),
-    //new constraint("<=", new vec2(0,w), new vec2(w,w), 0, 0),
-    //new constraint("<=", new vec2(w,0), new vec2(w,w), -Infinity, 0),
+        constraint_from_qqsc(1,0,">=", 0),
+        constraint_from_qqsc(1,0,"<=", w),
+        constraint_from_qqsc(0,1,">=", 0),
+        constraint_from_qqsc(0,1,"<=", w)
     ];
+
+    let click_pos = new vec2();
+    const pan_action = mouse_pos => {
+        const mp = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
+        canvas_offset_temp = mp.sub(click_pos).mul(new vec2(1,-1));
+    };
+    const start_pan = mouse_pos => {
+        click_pos = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
+        canvas.addEventListener('mousemove', pan_action);
+        canvas.addEventListener('mouseup', end_pan);
+    };
+    const end_pan = mouse_pos => {
+        canvas_offset = canvas_offset.add(canvas_offset_temp);
+        canvas.removeEventListener('mousemove', pan_action);
+        canvas.removeEventListener('mouseup', end_pan);
+        canvas_offset_temp = new vec2(0,0);
+    };
+    canvas.addEventListener('mousedown', start_pan);
 
     update();
     draw();
@@ -273,7 +300,7 @@ function draw_rect(p1,p2){
 function draw_poly(points){
     if (points.length === 0) return;
     ctx.beginPath();
-    const o = new vec2(10,10);
+    const o = canvas_offset.add(canvas_offset_temp);
     points.forEach((el, i)=>{
         let p = el.add(o);
         if (i===0) ctx.moveTo(p.x, p.y);
