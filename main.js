@@ -150,6 +150,7 @@ class contraint_row{
 let canvas_constraints = []
 let canvas_offset = new vec2();
 let canvas_offset_temp = new vec2();
+let canvas_scale = new vec2(1.0, 1.0);
 
 window.onload = ()=>{
     canvas = document.getElementById("canvas1");
@@ -175,11 +176,13 @@ window.onload = ()=>{
         click_pos = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
         canvas.addEventListener('mousemove', pan_action);
         canvas.addEventListener('mouseup', end_pan);
+        canvas.addEventListener('mouseout', end_pan);
     };
     const end_pan = mouse_pos => {
         canvas_offset = canvas_offset.add(canvas_offset_temp);
         canvas.removeEventListener('mousemove', pan_action);
         canvas.removeEventListener('mouseup', end_pan);
+        canvas.removeEventListener('mouseout', end_pan);
         canvas_offset_temp = new vec2(0,0);
     };
     canvas.addEventListener('mousedown', start_pan);
@@ -305,7 +308,7 @@ function draw_poly(points){
     ctx.beginPath();
     const o = canvas_offset.add(canvas_offset_temp);
     points.forEach((el, i)=>{
-        let p = el.add(o);
+        let p = el.add(o).mul(canvas_scale);
         if (i===0) ctx.moveTo(p.x, p.y);
         else ctx.lineTo(p.x, p.y);
     });
@@ -348,7 +351,7 @@ function update()
     valid_zone.points.sort((l ,r)=>{
         const v1 = r.mul(z.q).comp_sum();
         const v2 = l.mul(z.q).comp_sum();
-        return (v1) - (v2);
+        return v1 - v2;
     });
     const bp = valid_zone.points[0];
     const bestz = bp.mul(z.q).comp_sum(); 
