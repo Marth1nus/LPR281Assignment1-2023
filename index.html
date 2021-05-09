@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>JS Canvas demo</title>
+        <title>Simplex solving visual</title>
         
         
         <script type="application/javascript" language="javascript" src="main.js"></script>
@@ -19,23 +19,18 @@
         <tbody>
             <tr id = "Z">
                 <td>
-                    <select id="minmax">
-                        <option value="min">Min Z</option>
-                        <option value="max">Max Z</option>
+                    <select id="minmax" onchange="update()">
+                        <option value="max">max z</option>
+                        <option value="min">min z</option>
                     </select>
                 </td>
                 <td>=</td>
-                <td><input id="q1" type="number"></td><td>x1 + </td>
-                <td><input id="q2" type="number"></td><td>x2</td>
+                <td><input id="q1" type="number" value=1 onchange="update()"> * x1 + </td>
+                <td><input id="q2" type="number" value=1 onchange="update()"> * x2</td>
+                <td><input type="button" value="Add Constraint" onclick = "add_constraint()"></td>
             </tr>
         </tbody>
     </table>
-    <table><tbody id = "ctbody"></tbody></table>
-    
-    <input type="button" value="Add Constraint" onclick = "add_constraint()">
-    <input type="file" id="fileInput">
-    <button onclick="loadInputValue()">Open</button>
-    <button onclick="draw()">Draw</button>
-    
+    <table><tbody id = "ctbody"></tbody></table>   
 </body>
 </html>
