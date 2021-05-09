@@ -68,8 +68,8 @@ class constraint{
                 case "==": if (p.x == this.p1.x) return true; break;
                 case "<=": if (p.x <= this.p1.x) return true; break;
                 case ">=": if (p.x >= this.p1.x) return true; break;
-                case "< ": if (p.x <  this.p1.x) return true; break;
-                case "> ": if (p.x >  this.p1.x) return true; break;
+                case "<" : if (p.x <  this.p1.x) return true; break;
+                case ">" : if (p.x >  this.p1.x) return true; break;
                 default: print_error("esign was invalid");
             }
         }
@@ -78,8 +78,8 @@ class constraint{
                 case "==": if (p.y == this.y_of(p.x)) return true; break;
                 case "<=": if (p.y <= this.y_of(p.x)) return true; break;
                 case ">=": if (p.y >= this.y_of(p.x)) return true; break;
-                case "< ": if (p.y <  this.y_of(p.x)) return true; break;
-                case "> ": if (p.y >  this.y_of(p.x)) return true; break;
+                case "<" : if (p.y <  this.y_of(p.x)) return true; break;
+                case ">" : if (p.y >  this.y_of(p.x)) return true; break;
                 default: print_error("esign was invalid");
             }
         }
@@ -104,7 +104,7 @@ class constraint{
 };
 
 function constraint_from_qqsc(_q1,_q2,esign,_c1){
-    const w = canvas.width;
+    const w = canvas.width * 10;
     const q1 = parseFloat(_q1);
     const q2 = parseFloat(_q2);
     const c1 = parseFloat(_c1);
@@ -158,7 +158,7 @@ window.onload = ()=>{
     ctx.translate(0, canvas.height);
     ctx.scale(1, -1);
     
-    const w = canvas.width-10;
+    const w = canvas.width * 10;
     canvas_constraints = [
         constraint_from_qqsc(1,0,">=", 0),
         constraint_from_qqsc(1,0,"<=", w),
@@ -253,13 +253,16 @@ function add_constraint(q1 = 0, q2 = 0, esign = "<=", c = 0, color = "#ff0000"){
     
     document.getElementById("ctbody").appendChild(tr);
     
-    user_constraints.push( new contraint_row(tr) );
+    const ncr = new contraint_row(tr);
+    ncr.update_line();
+    user_constraints.push(ncr);
     
     tr.querySelector("#del").onclick = ()=>{
-        const i = user_constraints.findIndex(c=>c.tr === tr);
         document.getElementById("ctbody").removeChild(tr);
-        user_constraints[i] = user_constraints[user_constraints.length-1];
-        user_constraints.pop();
+        user_constraints = user_constraints.filter(e=>e!==ncr);
+        user_constraints.forEach((e,i)=>{
+            e.tr.querySelector("#trid").innerHTML = `C${i+1}`;
+        });
         update();
     };
 }
@@ -314,7 +317,7 @@ let valid_zone = {
     points:[],
     poly:[],
     best:[],
-    poly_color:"#32F3FF30"
+    poly_color:{ r:0.4, g:0.2, b:0.8, a:0.5 }
 };
 
 let htmlZ;
@@ -325,7 +328,7 @@ function update()
         points:[],
         poly:[],
         best:[],
-        poly_color:"#32F3FF30"
+        poly_color:valid_zone.poly_color
     };
     
     user_constraints.forEach((c)=>{c.update_line()});
@@ -358,19 +361,6 @@ let rot = 0.0;
 function draw() {
     ctx.clearRect(0,0,canvas.width, canvas.height);
 
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = "#000000";
-    // draw lines x1
-    //draw_line(
-    //    new vec2(-10, 0), 
-    //    new vec2(400, 0)
-    //    );
-    //// draw lines x2
-    //draw_line(
-    //    new vec2(0, -10), 
-    //    new vec2(0, 400)
-    //    );
-
     ctx.lineWidth = 2;
     user_constraints.forEach((row)=>{
         ctx.strokeStyle = row.color.value;
@@ -385,7 +375,13 @@ function draw() {
         draw_line(c.p1, c.p2);
     });
     
-    ctx.fillStyle = valid_zone.poly_color;
+    const color = valid_zone.poly_color;
+    const color_int = 
+        parseInt(color.r * parseInt("FF", 16)) * parseInt("01000000", 16) +
+        parseInt(color.g * parseInt("FF", 16)) * parseInt("00010000", 16) +
+        parseInt(color.b * parseInt("FF", 16)) * parseInt("00000100", 16) +
+        parseInt(color.a * parseInt("FF", 16)) * parseInt("00000001", 16);
+    ctx.fillStyle = '#' + color_int.toString(16);
     draw_poly(valid_zone.poly);
     
     valid_zone.points.forEach((p, i)=>{

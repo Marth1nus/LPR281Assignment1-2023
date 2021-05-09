@@ -10,8 +10,8 @@
         <script type="application/javascript" language="javascript" src="main.js"></script>
         
 </head>
-<body>
-    <canvas width=400 height=400 id="canvas1">
+<body style="background-color: grey;">
+    <canvas width=400 height=400 id="canvas1" style="background-color: whitesmoke;">
         
     </canvas>
     
@@ -27,7 +27,7 @@
                         <option value="min">min z</option>
                     </select>
                 </td>
-                <td>=</td>
+                <td>= </td>
                 <td><input id="q1" type="number" value=1 onchange="update()"> * x1 + </td>
                 <td><input id="q2" type="number" value=1 onchange="update()"> * x2</td>
                 <td><input type="button" value="Add Constraint" onclick = "add_constraint()"></td>
