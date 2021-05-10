@@ -91,8 +91,6 @@ class constraint{
                 case "==": if (p.x == this.p1.x) return true; break;
                 case "<=": if (p.x <= this.p1.x) return true; break;
                 case ">=": if (p.x >= this.p1.x) return true; break;
-                case "<" : if (p.x <  this.p1.x) return true; break;
-                case ">" : if (p.x >  this.p1.x) return true; break;
                 default: print_error("esign was invalid");
             }
         }
@@ -101,8 +99,6 @@ class constraint{
                 case "==": if (p.y == this.y_of(p.x)) return true; break;
                 case "<=": if (p.y <= this.y_of(p.x)) return true; break;
                 case ">=": if (p.y >= this.y_of(p.x)) return true; break;
-                case "<" : if (p.y <  this.y_of(p.x)) return true; break;
-                case ">" : if (p.y >  this.y_of(p.x)) return true; break;
                 default: print_error("esign was invalid");
             }
         }
@@ -140,8 +136,14 @@ function constraint_from_qqsc(_q1,_q2,esign,_c1){
         p1:new vec2(-w, m * (-w) + c),
         p2:new vec2(2*w, m * (2*w) + c)
     };
+    let sign = esign;
+    if (q2<0){
+        sign = 
+            sign === '>=' ? '<=' : 
+            sign === '<=' ? '>=' : sign;
+    }
     return new constraint(
-        esign, d.p1, d.p2, m, c
+        sign, d.p1, d.p2, m, c
     );
 }
 
@@ -173,7 +175,7 @@ class contraint_row{
 
 let user_constraints = [];
 let domain_constraints = [];
-let max_point = new vec2(1000000, 1000000);
+let max_point = new vec2(1,1).mul_scalar(1000000000000);
 let canvas_constraints = [];
 let canvas_offset = new vec2();
 let canvas_scale = new vec2(1.0, 1.0);
@@ -225,79 +227,94 @@ function load_file_contents(contents) {
     });
 
     let ll = fileLines.pop();
-    ll[0] = ll[0] === "+" ? ">=" : ll[0] === "-" ? "<=" : null;
-    ll[1] = ll[1] === "+" ? ">=" : ll[1] === "-" ? "<=" : null;
+    const cvrt = e=>
+        e === "+" ?     ">=" : 
+        e === "-" ?     "<=" : 
+        e === "urs" ?   null :
+        e === "int" ?   null : // what?
+        e === "bin" ?   null : // what?
+        null;
+    ll = ll.map(e=>cvrt(e));
     print(ll);
-    domain_constraints = [
-        constraint_from_qqsc(1,0,ll[0],0),
-        constraint_from_qqsc(0,1,ll[1],0)
-    ];
+    domain_constraints = [];
+    if (ll[0]) domain_constraints.push(constraint_from_qqsc(1,0,ll[0],0));
+    if (ll[1]) domain_constraints.push(constraint_from_qqsc(0,1,ll[1],0));
     
     update();
-    draw();
+    view_valid_zone();
   }
 
-window.onload = ()=>{
-    // atatch file-input button event
-    document.getElementById('file-input').addEventListener('change', readSingleFile);
+  function setup(){
+      // atatch file-input button event
+      document.getElementById('file-input').addEventListener('change', readSingleFile);
+      
+      canvas = document.getElementById("canvas1");
+      ctx = canvas.getContext("2d");
+      
+      ctx.translate(0, canvas.height);
+      ctx.scale(1, -1);
+      canvas_constraints = [
+          constraint_from_qqsc(1,0,"<=",  max_point.x),
+          constraint_from_qqsc(1,0,">=", -max_point.x),
+          constraint_from_qqsc(0,1,">=", -max_point.y),
+          constraint_from_qqsc(0,1,"<=",  max_point.y)
+        ];
+        
+        domain_constraints = [
+            constraint_from_qqsc(1,0,">=",0),
+            constraint_from_qqsc(0,1,">=",0)
+        ];
+        
+        let click_pos = new vec2();
+        let co = new vec2();
+        let cd = new vec2();
+        const pan_action = mouse_pos => {
+            const mp = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
+            cd = mp.sub(click_pos).mul(new vec2(1,-1));
+            canvas_offset = co.add(cd);
+        };
+        const start_pan = mouse_pos => {
+            click_pos = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
+            canvas.addEventListener('mousemove', pan_action);
+            canvas.addEventListener('mouseup', end_pan);
+            canvas.addEventListener('mouseout', end_pan);
+            co = new vec2(canvas_offset.x, canvas_offset.y);
+            cd = new vec2(0,0);
+        };
+        const end_pan = mouse_pos => {
+            canvas.removeEventListener('mousemove', pan_action);
+            canvas.removeEventListener('mouseup', end_pan);
+            canvas.removeEventListener('mouseout', end_pan);
+        };
+        canvas.addEventListener('mousedown', start_pan);
 
-    canvas = document.getElementById("canvas1");
-    ctx = canvas.getContext("2d");
+        let a = 0;
+        const scroll_action = ev=>{
+            const d = ev.deltaY > 0 ? 1.01 : 0.99;
+            canvas_scale = canvas_scale.mul_scalar(d);
+            ev.preventDefault();
+            return false;
+        }
+        canvas.addEventListener('wheel', scroll_action, false);
 
-    ctx.translate(0, canvas.height);
-    ctx.scale(1, -1);
-    canvas_constraints = [
-        constraint_from_qqsc(1,0,"<=",  max_point.x),
-        constraint_from_qqsc(1,0,">=", -max_point.x),
-        constraint_from_qqsc(0,1,">=", -max_point.y),
-        constraint_from_qqsc(0,1,"<=",  max_point.y)
-    ];
-
-    domain_constraints = [
-        constraint_from_qqsc(1,0,">=",0),
-        constraint_from_qqsc(0,1,">=",0)
-    ];
-
-    let click_pos = new vec2();
-    let co = new vec2();
-    let cd = new vec2();
-    const pan_action = mouse_pos => {
-        const mp = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
-        cd = mp.sub(click_pos).mul(new vec2(1,-1));
-        canvas_offset = co.add(cd);
+        update();
+        draw();
     };
-    const start_pan = mouse_pos => {
-        click_pos = new vec2( mouse_pos.offsetX, mouse_pos.offsetY );
-        canvas.addEventListener('mousemove', pan_action);
-        canvas.addEventListener('mouseup', end_pan);
-        canvas.addEventListener('mouseout', end_pan);
-        co = new vec2(canvas_offset.x, canvas_offset.y);
-        cd = new vec2(0,0);
-    };
-    const end_pan = mouse_pos => {
-        canvas.removeEventListener('mousemove', pan_action);
-        canvas.removeEventListener('mouseup', end_pan);
-        canvas.removeEventListener('mouseout', end_pan);
-    };
-    canvas.addEventListener('mousedown', start_pan);
-
-    update();
-    draw();
-};
-
-
-function get_valid_points(){
-    // get lines
-    const lines = 
-    user_constraints.map((c)=>{ return c.constraint })
-    .concat(canvas_constraints)
-    .concat(domain_constraints);
+    window.onload = setup;
     
-    let valid_points = [];
-    lines.forEach((la, a, lines_a)=>{
-        lines_a.slice(a+1).forEach((lb, b, lines_b)=>{
-            const p = la.get_intersect(lb);
-            if (p === null) return;
+    
+    function get_valid_points(){
+        // get lines
+        const lines = 
+        user_constraints.map((c)=>{ return c.constraint })
+        .concat(canvas_constraints)
+        .concat(domain_constraints);
+        
+        let valid_points = [];
+        lines.forEach((la, a, lines_a)=>{
+            lines_a.slice(a+1).forEach((lb, b, lines_b)=>{
+                const p = la.get_intersect(lb);
+                if (p === null) return;
             if (lines.every((l)=>{ return l.is_valid_point(p); }))
                 valid_points.push(p);
         });
@@ -339,8 +356,6 @@ function add_constraint(q1 = 0, q2 = 0, esign = "<=", c = 0, color = "#ff0000"){
                 <option value="==">==</option>
                 <option value=">=">>=</option>
                 <option value="<="><=</option>
-                <option value=">">></option>
-                <option value="<"><</option>
             </select>
         </td>
         <td><input id="c" type="number" value=${c} onchange="update()"></td>
@@ -411,6 +426,31 @@ function draw_poly(points){
     else ctx.fill();
 }
 
+function view_valid_zone(){
+    update();
+    let points = valid_zone.points.map(p=>p);
+    const min = new vec2(0,0);
+    const max = new vec2(0,0);
+    points.sort((l,r)=>l.x-r.x); min.x = points[0].x;
+    points.sort((l,r)=>l.y-l.y); min.y = points[0].y;
+    points.sort((l,r)=>r.x-l.x); max.x = points[0].x;
+    points.sort((l,r)=>r.y-l.y); max.y = points[0].y;
+
+    let ave = new vec2(0,0);
+    points.forEach(p=>{ave = ave.add(p)});
+    ave = ave.div_scalar(points.length);
+
+    const dif = max.sub(min);
+    const d = parseFloat(dif.x > dif.y ? dif.x : dif.y);
+    const scr = new vec2(canvas.width, canvas.height);
+    const s = parseFloat(scr.x > scr.y ? scr.x : scr.y);
+
+    canvas_scale = new vec2(1,1).div_scalar(s/2/d);
+
+    canvas_offset = new vec2(0,0);
+    canvas_offset = canvas_offset.sub(math_to_canvas_coord(ave)).add(scr.mul_scalar(0.5));
+}
+
 let valid_zone = {
     points:[],
     poly:[],
@@ -427,6 +467,12 @@ function update()
         best:[],
         poly_color:valid_zone.poly_color
     };
+    z = {
+        q:new vec2(),
+        s:null,
+        calc(p){ return this.q.mul(p).comp_sum() },
+        line:null
+        };
     
     //update constraints
     user_constraints.forEach((c)=>{c.update_line()});
@@ -453,9 +499,12 @@ function update()
     const bp = valid_zone.points[0];
     const bestz = z.calc(bp); 
     valid_zone.best = valid_zone.points.filter(p=>z.calc(p) === bestz);
-        
+    
+    let z1 = bestz;
+    let x1 = bp.x; if (x1 === max_point.x) { x1 = Infinity; z1 = Infinity; }
+    let x2 = bp.y; if (x2 === max_point.y) { x2 = Infinity; z1 = Infinity; }
     document.getElementById("answer").innerHTML = 
-    ` = ${z.q.x} * ${bp.x} + ${z.q.y} * ${bp.y} = ${bestz}`;
+    ` = ${z.q.x} * ${x1} + ${z.q.y} * ${x2} = ${z1}`;
 
     z.line = constraint_from_qqsc(z.q.x, z.q.y,"==",0);
     if (z.line.p1.x !== z.line.p2.x){
@@ -507,24 +556,26 @@ function draw() {
     ctx.fillStyle = '#' + color_int.toString(16);
     draw_poly(valid_zone.poly);
     
-    valid_zone.points.forEach((p, i)=>{
-        ctx.fillStyle = "#00FFF040";
+    const draw_star = (p, i, color)=>{
+        ctx.fillStyle = color;
         draw_oct(p, 
-            8 + 2 * (1 + Math.cos(rot)) * 0.5 , 
+            (8 + 2 * (1 + Math.cos(rot)) * 0.5) * canvas_scale.x, 
             rot * (i % 2 === 0 ? 1 : -1)
             );
+        }
+        
+        valid_zone.points.forEach((p, i)=>{
+            draw_star(p, i, "#00FFF040");
         });
         
-    valid_zone.best.forEach((p, i)=>{
-        ctx.fillStyle = "#FF000090"
-        draw_oct(p, 
-            8 + 2 * (1 + Math.cos(rot)) * 0.5 , 
-            rot * (i % 2 === 0 ? 1 : -1)
-            );
+        valid_zone.best.forEach((p, i)=>{
+            draw_star(p, i, "#FF000090");
     });
 
-    const zl = z.line.get_draw_points();
-    draw_line(zl.p1, zl.p2);
+    if (z.line) {
+        const zl = z.line.get_draw_points();
+        draw_line(zl.p1, zl.p2);
+    }
     
 
     rot += 0.05;

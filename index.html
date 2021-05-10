@@ -11,14 +11,32 @@
         
 </head>
 <body style="background-color: grey;">
-    <canvas width=1080 height=720 id="canvas1" style="background-color: whitesmoke;">
+    <table> 
+        <tbody>
+            <tr><td>Contributers:</td>
+                         <td>Marthinus Prinsloo </td><td>| 578515 </td></tr>
+            <tr><td></td><td>Johannes Taute     </td><td>| 576361 </td></tr>
+            <tr><td></td><td>Etienne de Villiers</td><td>| 576385 </td></tr>
+        </tbody>
+    </table>
+    <canvas id="canvas1" style="background-color: whitesmoke;">
+        <script>
+            function setup_canvas(){
+                let canvas = document.getElementById("canvas1");
+                const s = 0.6
+                canvas.width = window.innerWidth * s;
+                canvas.height = window.innerHeight * s;
+            }
+            setup_canvas();
+        </script>
         
     </canvas>
     
     <table>
         <tbody>
             <tr>
-                <td><button onclick="canvas_offset = new vec2(0,0)">reset pan</button></td>
+                <td><button onclick="canvas_offset = new vec2(0,0); canvas_scale = new vec2(1,1);">reset view</button></td>
+                <td><button onclick="view_valid_zone()">view valid area</button></td>
                 <td colspan="6">Load LP model from file:<input type="file" id="file-input" /></td>
             </tr>
         </tbody>
