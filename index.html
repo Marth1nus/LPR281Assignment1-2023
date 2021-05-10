@@ -21,6 +21,10 @@
                 <td><button onclick="canvas_offset = new vec2(0,0)">reset pan</button></td>
                 <td colspan="6">Load LP model from file:<input type="file" id="file-input" /></td>
             </tr>
+        </tbody>
+    </table>
+    <table>
+        <tbody>
             <tr id = "Z">
                 <td>
                     <select id="minmax" onchange="update()">
@@ -31,10 +35,13 @@
                 <td>= </td>
                 <td><input id="q1" type="number" value=1 onchange="update()"> * x1 + </td>
                 <td><input id="q2" type="number" value=1 onchange="update()"> * x2</td>
-                <td><input type="button" value="Add Constraint" onclick = "add_constraint()"></td>
+                <td id="answer"></td>
             </tr>
         </tbody>
     </table>
-    <table><tbody id = "ctbody"></tbody></table>   
+    <table>Constraints : 
+        <tbody id = "ctbody"></tbody>
+        <td><button onclick = "add_constraint()">+</button></td>
+    </table>   
 </body>
 </html>
