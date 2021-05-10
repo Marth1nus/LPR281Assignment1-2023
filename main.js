@@ -152,7 +152,58 @@ let canvas_offset = new vec2();
 let canvas_offset_temp = new vec2();
 let canvas_scale = new vec2(1.0, 1.0);
 
+function setElementValue(id, valueToSelect) {   
+    console.log(`Setting ${id} to ${valueToSelect}`); 
+    let element = document.getElementById(id);
+    element.value = valueToSelect;
+}
+
+function readSingleFile(e) {
+    var file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var contents = e.target.result;
+      load_file_contents(contents);
+    };
+    reader.readAsText(file);
+}
+
+function load_file_contents(contents) {
+    let fileLines = contents.split("\n");
+
+    // setup obj function
+    objFunc = fileLines[0].split(" ");
+    console.log(objFunc);
+
+    setElementValue('minmax', objFunc[0]);
+    setElementValue('q1', parseFloat(objFunc[1]));
+    setElementValue('q2', parseFloat(objFunc[2]));
+
+    user_constraints = [];
+    for (let cc = 1; cc <= fileLines.length - 2; cc ++) {
+        // +2 +1 <= 5
+        let values = fileLines[cc].split(" ");
+        console.log(values);
+
+        add_constraint(
+            parseFloat(values[0]),
+            parseFloat(values[1]),
+            values[2],
+            parseFloat(values[3])
+        );
+    }
+    
+    update();
+    draw();
+  }
+
 window.onload = ()=>{
+    // atatch file-input button event
+    document.getElementById('file-input').addEventListener('change', readSingleFile);
+
     canvas = document.getElementById("canvas1");
     ctx = canvas.getContext("2d");
 
