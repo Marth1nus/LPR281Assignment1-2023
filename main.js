@@ -1,6 +1,6 @@
 /*
     TO DO :
-    constratints cannot correctly handle always true or alwyas false conditions
+    constraints cannot correctly handle always true or always false conditions
         example : 0*x1 + 0*x2 >= 0
 
 */
@@ -40,11 +40,11 @@ class vec2{
 
     length() { return Math.sqrt(this.length_sqr()); }
 
-    normalise() { return new vec2(this.x, this.y).div_scalar(this.length()); }
+    normalize() { return new vec2(this.x, this.y).div_scalar(this.length()); }
 
     comp_sum() { return this.x + this.y; }
 
-    compair(r) { return this.x === r.x && this.y === r.y }
+    compare(r) { return this.x === r.x && this.y === r.y }
 }
 
 function math_to_canvas_coord(canvas_coord){
@@ -148,7 +148,7 @@ function constraint_from_qqsc(_q1,_q2,esign,_c1){
 }
 
 
-class contraint_row{
+class constraint_row{
     constructor(tr){
         this.tr    = tr;
         this.q1    = tr.querySelector("#q1");
@@ -157,7 +157,7 @@ class contraint_row{
         this.c     = tr.querySelector("#c");
         this.color = tr.querySelector("#clr");
         this.constraint = {};
-        this.consitant_result = null;
+        this.consistent_result = null;
         this.update_line();
     }
 
@@ -168,7 +168,7 @@ class contraint_row{
             this.esign.value,
             this.c.value
         );
-        this.consitant_result = null;
+        this.consistent_result = null;
         this.tr.style.backgroundColor = this.color.value;
     }
 }
@@ -245,7 +245,7 @@ function load_file_contents(contents) {
   }
 
   function setup(){
-      // atatch file-input button event
+      // attach file-input button event
       document.getElementById('file-input').addEventListener('change', readSingleFile);
       
       canvas = document.getElementById("canvas1");
@@ -327,18 +327,18 @@ function poly_sort(in_points){
     if (in_points.length === 0) return;
     let points = in_points.map((p)=>{ return p; });
     //find left most point :
-    points.sort((l,r)=>{ return r.x - l.x }); // decending by x
+    points.sort((l,r)=>{ return r.x - l.x }); // descending by x
     let p = points.pop(); // the left most point
     let dir = new vec2(-1,0); // moving left more
     let res = [p];
     while(points.length > 0){
         points.sort((l, r)=>{
-            const ldir = l.sub(p).normalise();
-            const rdir = r.sub(p).normalise();
+            const ldir = l.sub(p).normalize();
+            const rdir = r.sub(p).normalize();
             return ldir.dot(dir) - rdir.dot(dir);
         });
         const np = points.pop();
-        dir = np.sub(p).normalise();
+        dir = np.sub(p).normalize();
         res.push(np);
         p = np;
     }
@@ -366,7 +366,7 @@ function add_constraint(q1 = 0, q2 = 0, esign = "<=", c = 0, color = "#ff0000"){
     
     document.getElementById("ctbody").appendChild(tr);
     
-    const ncr = new contraint_row(tr);
+    const ncr = new constraint_row(tr);
     ncr.update_line();
     user_constraints.push(ncr);
     
