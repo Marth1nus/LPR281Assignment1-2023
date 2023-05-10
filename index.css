@@ -1,0 +1,27 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    text-align: center;
+    padding: 20px;
+    background-color: rgb(161, 161, 161);
+    border-style: ridge;
+    max-width: min(60vh, 60vw);
+}
+
+.table_names {
+    margin-bottom: 20px;
+}
+
+button {
+    margin-bottom: 10px;
+}
+
+input[type="number"] {
+    width: 50px;
+}
