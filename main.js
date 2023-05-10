@@ -2,7 +2,6 @@
     TO DO :
     constraints cannot correctly handle always true or always false conditions
         example : 0*x1 + 0*x2 >= 0
-
 */
 
 
@@ -10,39 +9,27 @@
 var canvas;
 var ctx;
 
-function print_error(s) {
-    console.error(s); 
-}
-
-function print(s) {
-    console.log(s); 
-}
-
 class vec2{
     constructor(x = 0, y = 0){
         this.x = parseFloat(x);
         this.y = parseFloat(y);
     }
 
-    add(r){ return new vec2( this.x + r.x, this.y + r.y ); }
-    sub(r){ return new vec2( this.x - r.x, this.y - r.y ); }
-    mul(r){ return new vec2( this.x * r.x, this.y * r.y ); }
-    div(r){ return new vec2( this.x / r.x, this.y / r.y ); }
+    add(r) { return new vec2( this.x + r.x, this.y + r.y ); }
+    sub(r) { return new vec2( this.x - r.x, this.y - r.y ); }
+    mul(r) { return new vec2( this.x * r.x, this.y * r.y ); }
+    div(r) { return new vec2( this.x / r.x, this.y / r.y ); }
 
-    add_scalar(r){ return new vec2( this.x + parseFloat(r), this.y + parseFloat(r) ); }
-    sub_scalar(r){ return new vec2( this.x - parseFloat(r), this.y - parseFloat(r) ); }
-    mul_scalar(r){ return new vec2( this.x * parseFloat(r), this.y * parseFloat(r) ); }
-    div_scalar(r){ return new vec2( this.x / parseFloat(r), this.y / parseFloat(r) ); }
+    add_scalar(r) { return this.add(new vec2(r, r)); }
+    sub_scalar(r) { return this.sub(new vec2(r, r)); }
+    mul_scalar(r) { return this.mul(new vec2(r, r)); }
+    div_scalar(r) { return this.div(new vec2(r, r)); }
 
-    dot(r) { return this.x * r.x + this.y * r.y; }
-
-    length_sqr() { return this.mul(this).comp_sum(); }
-
-    length() { return Math.sqrt(this.length_sqr()); }
-
-    normalize() { return new vec2(this.x, this.y).div_scalar(this.length()); }
-
-    comp_sum() { return this.x + this.y; }
+    component_sum() { return this.x + this.y; }
+    dot(r) { return this.mul(r).component_sum(); }
+    length_squared() { return this.mul(this).component_sum(); }
+    length() { return Math.sqrt(this.length_squared()); }
+    normalize() { return this.div_scalar(this.length()); }
 
     compare(r) { return this.x === r.x && this.y === r.y }
 }
@@ -71,35 +58,30 @@ class constraint{
     get_draw_points(){
         const min = canvas_to_math_coord(new vec2(0,0));
         const max = canvas_to_math_coord(new vec2(canvas.width, canvas.height));
-        if (this.p1.x === this.p2.x){
-            return {
-                p1:new vec2(this.p1.x, min.y),
-                p2:new vec2(this.p2.x, max.y)
-            }
-        }
-        else {
-            return {
-                p1:new vec2(min.x, this.y_of(min.x)),
-                p2:new vec2(max.x, this.y_of(max.x))
-            }
+        return this.p1.x === this.p2.x ?
+        {
+            p1:new vec2(this.p1.x, min.y),
+            p2:new vec2(this.p2.x, max.y),
+        } :
+        {
+            p1:new vec2(min.x, this.y_of(min.x)),
+            p2:new vec2(max.x, this.y_of(max.x)),
         }
     }
 
     is_valid_point(p){
         if (this.m === -Infinity){
             switch (this.esign){
-                case "==": if (p.x == this.p1.x) return true; break;
-                case "<=": if (p.x <= this.p1.x) return true; break;
-                case ">=": if (p.x >= this.p1.x) return true; break;
-                default: print_error("esign was invalid");
+                case "==": return p.x == this.p1.x;
+                case "<=": return p.x <= this.p1.x;
+                case ">=": return p.x >= this.p1.x;
             }
         }
         else{
             switch (this.esign){
-                case "==": if (p.y == this.y_of(p.x)) return true; break;
-                case "<=": if (p.y <= this.y_of(p.x)) return true; break;
-                case ">=": if (p.y >= this.y_of(p.x)) return true; break;
-                default: print_error("esign was invalid");
+                case "==": return p.y == this.y_of(p.x);
+                case "<=": return p.y <= this.y_of(p.x);
+                case ">=": return p.y >= this.y_of(p.x);
             }
         }
         return false;
@@ -140,7 +122,8 @@ function constraint_from_qqsc(_q1,_q2,esign,_c1){
     if (q2<0){
         sign = 
             sign === '>=' ? '<=' : 
-            sign === '<=' ? '>=' : sign;
+            sign === '<=' ? '>=' : 
+            sign;
     }
     return new constraint(
         sign, d.p1, d.p2, m, c
@@ -166,7 +149,7 @@ class constraint_row{
             this.q1.value,
             this.q2.value,
             this.esign.value,
-            this.c.value
+            this.c.value,
         );
         this.consistent_result = null;
         this.tr.style.backgroundColor = this.color.value;
@@ -214,14 +197,16 @@ function load_file_contents(contents) {
     const ct = document.getElementById("ctbody");
     user_constraints.forEach(c=>{ct.removeChild(c.tr)})
     user_constraints = [];
-    fileLines.slice(1, fileLines.length-1).forEach(values=>{
+    fileLines
+    .slice(1, fileLines.length-1)
+    .forEach(values=>{
         // +2 +1 <= 5
         console.log(values);
 
         add_constraint(
             parseFloat(values[0]),
             parseFloat(values[1]),
-            values[2],
+                      (values[2]),
             parseFloat(values[3])
         );
     });
@@ -235,7 +220,7 @@ function load_file_contents(contents) {
         e === "bin" ?   null : // what?
         null;
     ll = ll.map(e=>cvrt(e));
-    print(ll);
+    console.log(ll);
     domain_constraints = [];
     if (ll[0]) domain_constraints.push(constraint_from_qqsc(1,0,ll[0],0));
     if (ll[1]) domain_constraints.push(constraint_from_qqsc(0,1,ll[1],0));
@@ -470,7 +455,7 @@ function update()
     z = {
         q:new vec2(),
         s:null,
-        calc(p){ return this.q.mul(p).comp_sum() },
+        calc(p){ return this.q.mul(p).component_sum() },
         line:null
         };
     
@@ -491,7 +476,7 @@ function update()
             htmlZ.querySelector("#q2").value
             ),
         s:htmlZ.querySelector("#minmax").value === "min",
-        calc(p){ return this.q.mul(p).comp_sum() },
+        calc(p){ return this.q.mul(p).component_sum() },
         line:null
         };
     valid_zone.points.sort((l ,r)=>{ return z.calc(r) - z.calc(l) });
@@ -503,8 +488,12 @@ function update()
     let z1 = bestz;
     let x1 = bp.x; if (x1 === max_point.x) { x1 = Infinity; z1 = Infinity; }
     let x2 = bp.y; if (x2 === max_point.y) { x2 = Infinity; z1 = Infinity; }
-    document.getElementById("answer").innerHTML = 
-    ` = ${z.q.x} * ${x1} + ${z.q.y} * ${x2} = ${z1}`;
+    document.getElementById("answer_line0").innerHTML = `= ${z.q.x} * ${x1} + ${z.q.y} * ${x2}`
+    document.getElementById("answer_line1").innerHTML = `= ${z1}`
+    document.getElementById("answer_line2").innerHTML = `= ${x1}`
+    document.getElementById("answer_line3").innerHTML = `= ${x2}`
+    document.getElementById("answer_line4").innerHTML = `= ${z1}`
+    
 
     z.line = constraint_from_qqsc(z.q.x, z.q.y,"==",0);
     if (z.line.p1.x !== z.line.p2.x){
