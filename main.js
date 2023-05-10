@@ -530,18 +530,15 @@ function draw() {
     
     const draw_star = (p, i, color)=>{
         ctx.fillStyle = color;
-        draw_oct(p, 
-            (8 + 2 * (1 + Math.cos(rot)) * 0.5) * canvas_scale.x, 
-            rot * (i % 2 === 0 ? 1 : -1)
-            );
-        }
+        draw_oct(p, 4 * canvas_scale.length(), i % 2 ? rot : -rot);
+    }
         
-        valid_zone.points.forEach((p, i)=>{
-            draw_star(p, i, "#00FFF040");
-        });
+    valid_zone.points.forEach((p, i)=>{
+        draw_star(p, i, "#00FFF040");
+    });
         
-        valid_zone.best.forEach((p, i)=>{
-            draw_star(p, i, "#FF000090");
+    valid_zone.best.forEach((p, i)=>{
+        draw_star(p, i, "#FF000090");
     });
 
     if (z.line) {
