@@ -8,23 +8,37 @@ body {
 
 .container {
     /* text-align: center; */
+    display: inline-block;
     padding: 20px;
     background-color: rgb(161, 161, 161);
     border-style: ridge;
-    max-width: min(60vh, 60vw);
+    /* max-width: min(60vh, 60vw); */
+    width: 80%;
+    /* height: 80%; */
 }
 
-.table_container {
+.table_names{
     padding: 20px;
+    width: 100%;
+    /* height: 100%; */
     background-color: #f4f4f4;
     border-radius: 10px;
     margin-bottom: 20px;
+    margin-top: 20px;
+    /* justify-content: center;
+    align-items: center; */
+    /* text-align: center; */
 }
 
-.table_names {
-    /* margin-bottom: 20px; */
+.table_names tbody{
+    /* justify-content: center; */
+    align-items: center;
+    /* text-align: center; */
 }
+#canvas1 {
+    height: 30%;
 
+}
 .canva_container {
     /* display: flex; */
     justify-content: center;
@@ -32,6 +46,7 @@ body {
     padding: 20px;
     background-color: #f5f5f5;
     border-radius: 10px;
+    height: 100%;
 }
 
 .lp_container {
