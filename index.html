@@ -11,40 +11,29 @@
         
 </head>
 <body style="background-color: grey;">
+
     <table> 
         <tbody>
-            <tr><td>Contributors:</td>
-                         <td>Marthinus Prinsloo </td><td>| 578515 </td></tr>
-            <tr><td></td><td>Johannes Taute     </td><td>| 576361 </td></tr>
-            <tr><td></td><td>Zeldene van Vüren  </td><td>| 577115 </td></tr>
-            <tr><td></td><td>James Rudd         </td><td>| 578691 </td></tr>
+            <tr><td>Contributors:</td><td>Marthinus Prinsloo </td><td>| 578515 </td></tr>
+            <tr><td             ></td><td>Johannes Taute     </td><td>| 576361 </td></tr>
+            <tr><td             ></td><td>Zeldene van Vüren  </td><td>| 577115 </td></tr>
+            <tr><td             ></td><td>James Rudd         </td><td>| 578691 </td></tr>
         </tbody>
     </table>
+
     <canvas id="canvas1" style="
         background-color: gray; 
-        width: 100%;
-        height: 50vh;">
-        <script>
-            function setup_canvas(){
-                let canvas = document.getElementById("canvas1");
-                const s = 0.6
-                canvas.width = window.innerWidth * s;
-                canvas.height = window.innerHeight * s;
-            }
-            setup_canvas();
-        </script>
-        
+        width:  min(60vh, 60vw);
+        height: min(60vh, 60vw);
+        border-style: ridge;">        
     </canvas>
-    
-    <table>
-        <tbody>
-            <tr>
-                <td><button onclick="canvas_offset = new vec2(0,0); canvas_scale = new vec2(1,1);">reset view</button></td>
-                <td><button onclick="view_valid_zone()">view valid area</button></td>
-                <td colspan="6">Load LP model from file:<input type="file" id="file-input" /></td>
-            </tr>
-        </tbody>
-    </table>
+    <br>
+    <button onclick="
+        canvas_offset = new vec2(0,0); 
+        canvas_scale = new vec2(1,1);">reset view</button>
+    <button onclick="view_valid_zone()">view valid area</button>
+    <br><br>Load LP model from file:<input type="file" id="file-input" />
+    <br><br>
     <table>
         <tbody>
             <tr id = "Z">

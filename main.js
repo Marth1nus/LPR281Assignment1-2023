@@ -275,7 +275,7 @@ function load_file_contents(contents) {
 
         let a = 0;
         const scroll_action = ev=>{
-            const d = ev.deltaY > 0 ? 1.01 : 0.99;
+            const d = ev.deltaY > 0 ? 1.1 : 0.9;
             canvas_scale = canvas_scale.mul_scalar(d);
             ev.preventDefault();
             return false;
@@ -291,7 +291,7 @@ function load_file_contents(contents) {
     function get_valid_points(){
         // get lines
         const lines = 
-        user_constraints.map((c)=>{ return c.constraint })
+        user_constraints.map(c=>{ return c.constraint })
         .concat(canvas_constraints)
         .concat(domain_constraints);
         
@@ -300,7 +300,7 @@ function load_file_contents(contents) {
             lines_a.slice(a+1).forEach((lb, b, lines_b)=>{
                 const p = la.get_intersect(lb);
                 if (p === null) return;
-            if (lines.every((l)=>{ return l.is_valid_point(p); }))
+            if (lines.every(l=>{ return l.is_valid_point(p); }))
                 valid_points.push(p);
         });
     });
@@ -310,7 +310,7 @@ function load_file_contents(contents) {
 function poly_sort(in_points){
     // note can only work for convex shapes
     if (in_points.length === 0) return;
-    let points = in_points.map((p)=>{ return p; });
+    let points = in_points.map(p=>{ return p; });
     //find left most point :
     points.sort((l,r)=>{ return r.x - l.x }); // descending by x
     let p = points.pop(); // the left most point
@@ -330,7 +330,13 @@ function poly_sort(in_points){
     return res;
 }
 
-function add_constraint(q1 = 0, q2 = 0, esign = "<=", c = 0, color = "#ff0000"){
+let rainbow_i = 0
+const rainbow = ["#FF0018", "#FFA52C", "#FFFF41", "#008018", "#0000F9", "#86007D"];
+const rainbow_i_next = ()=>rainbow_i = (rainbow_i + 1) % rainbow.length
+const rainbow_next = ()=>rainbow[rainbow_i_next()]
+
+
+function add_constraint(q1 = 0, q2 = 0, esign = "<=", c = 0, color = rainbow_next()){
     let tr = document.createElement("tr");
     tr.innerHTML = `
         <td id="trid"> C${user_constraints.length + 1} </td>
@@ -407,33 +413,35 @@ function draw_poly(points){
         const p = math_to_canvas_coord(el);
         ctx.lineTo(p.x, p.y);
     });
-    if (points.length === 2) ctx.stroke();
-    else ctx.fill();
+    if (points.length === 2) 
+        ctx.stroke();
+    else 
+        ctx.fill();
 }
 
 function view_valid_zone(){
     update();
     let points = valid_zone.points.map(p=>p);
-    const min = new vec2(0,0);
-    const max = new vec2(0,0);
-    points.sort((l,r)=>l.x-r.x); min.x = points[0].x;
-    points.sort((l,r)=>l.y-l.y); min.y = points[0].y;
-    points.sort((l,r)=>r.x-l.x); max.x = points[0].x;
-    points.sort((l,r)=>r.y-l.y); max.y = points[0].y;
+    let points_x = points.map(p=>p.x);
+    let points_y = points.map(p=>p.y);
 
-    let ave = new vec2(0,0);
-    points.forEach(p=>{ave = ave.add(p)});
-    ave = ave.div_scalar(points.length);
+    let min = new vec2(
+        Math.min(...points_x),
+        Math.min(...points_y),
+    );
+    let max = new vec2(
+        Math.max(...points_x),
+        Math.max(...points_y),
+    );
 
-    const dif = max.sub(min);
-    const d = parseFloat(dif.x > dif.y ? dif.x : dif.y);
-    const scr = new vec2(canvas.width, canvas.height);
-    const s = parseFloat(scr.x > scr.y ? scr.x : scr.y);
+    canvas_scale = max.sub(min)
+        .div(new vec2(canvas.width, canvas.height))
+        .mul_scalar(2);
+    canvas_offset = min
+        .div(canvas_scale)
+        .sub(max.sub(min))
+        .sub(min.mul(new vec2(1,0)));
 
-    canvas_scale = new vec2(1,1).div_scalar(s/2/d);
-
-    canvas_offset = new vec2(0,0);
-    canvas_offset = canvas_offset.sub(math_to_canvas_coord(ave)).add(scr.mul_scalar(0.5));
 }
 
 let valid_zone = {
@@ -446,21 +454,11 @@ let z;
 let htmlZ;
 function update()
 {
-    valid_zone = {
-        points:[],
-        poly:[],
-        best:[],
-        poly_color:valid_zone.poly_color
-    };
-    z = {
-        q:new vec2(),
-        s:null,
-        calc(p){ return this.q.mul(p).component_sum() },
-        line:null
-        };
+    valid_zone.poly = [];
+    valid_zone.best = [];
     
     //update constraints
-    user_constraints.forEach((c)=>{c.update_line()});
+    user_constraints.forEach(c=>c.update_line());
 
     valid_zone.points = get_valid_points();
     if (valid_zone.points.length === 0) return;
@@ -474,12 +472,15 @@ function update()
         q:new vec2(
             htmlZ.querySelector("#q1").value,
             htmlZ.querySelector("#q2").value
-            ),
+        ),
         s:htmlZ.querySelector("#minmax").value === "min",
-        calc(p){ return this.q.mul(p).component_sum() },
-        line:null
-        };
-    valid_zone.points.sort((l ,r)=>{ return z.calc(r) - z.calc(l) });
+        line:null,
+        calc(p) 
+        { 
+            return this.q.mul(p).component_sum() 
+        },
+    };
+    valid_zone.points.sort((l ,r) => z.calc(r) - z.calc(l));
     if (z.s) valid_zone.points.reverse();
     const bp = valid_zone.points[0];
     const bestz = z.calc(bp); 
@@ -496,30 +497,14 @@ function update()
     
 
     z.line = constraint_from_qqsc(z.q.x, z.q.y,"==",0);
-    if (z.line.p1.x !== z.line.p2.x){
-        z.line.c = bp.y - bp.x * z.line.m;
-    }
-    else{
-        z.line.c = bp.x
-    }
+    z.line.c = 
+        z.line.p1.x !== z.line.p2.x ?
+        bp.y - bp.x * z.line.m : bp.x;
 }
 
 let rot = 0.0;
 function draw() {
     ctx.clearRect(0,0,canvas.width, canvas.height);
-
-    /*
-    ctx.strokeStyle = "#000000";
-    draw_line(
-        new vec2(0,-1).mul_scalar(100), 
-        new vec2(0, 1).mul_scalar(100)
-    );
-
-    draw_line(
-        new vec2(-1,0).mul_scalar(100), 
-        new vec2( 1,0).mul_scalar(100)
-    );
-    */
 
     const draw_constraint = c=>{
         const l = c.get_draw_points();
@@ -527,7 +512,7 @@ function draw() {
     };
 
     ctx.lineWidth = 2;
-    user_constraints.forEach((row)=>{
+    user_constraints.forEach(row=>{
         ctx.strokeStyle = row.color.value;
         draw_constraint(row.constraint);
     });
