@@ -1,10 +1,6 @@
 {
-  "cSpell.words": [
-    "bestz",
-    "ctbody",
-    "cvrt",
-    "esign",
-    "qqsc",
-    "trid"
-  ]
+  "cSpell.words": ["bestz", "ctbody", "cvrt", "esign", "qqsc", "trid"],
+  "files.associations": {
+    "xstring": "cpp"
+  }
 }
