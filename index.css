@@ -14,6 +14,12 @@ body {
     max-width: min(60vh, 60vw);
 }
 
+.table_container {
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+}
+
 .table_names {
     margin-bottom: 20px;
 }
