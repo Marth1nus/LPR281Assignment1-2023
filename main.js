@@ -511,7 +511,7 @@ function draw() {
         draw_line(l.p1, l.p2);
     };
 
-    ctx.lineWidth = 2;
+    ctx.lineWidth = -canvas_scale.length_squared();
     user_constraints.forEach(row=>{
         ctx.strokeStyle = row.color.value;
         draw_constraint(row.constraint);
