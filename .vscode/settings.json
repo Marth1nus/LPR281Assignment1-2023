@@ -4,7 +4,15 @@
     "ctbody",
     "cvrt",
     "esign",
+    "Marthinus",
+    "Prinsloo",
     "qqsc",
-    "trid"
-  ]
+    "Taute",
+    "trid",
+    "Vüren",
+    "Zeldene"
+  ],
+  "files.associations": {
+    "xstring": "cpp"
+  }
 }
