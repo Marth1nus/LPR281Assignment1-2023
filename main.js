@@ -317,11 +317,9 @@ function poly_sort(in_points){
     let dir = new vec2(-1,0); // moving left more
     let res = [p];
     while(points.length > 0){
-        points.sort((l, r)=>{
-            const ldir = l.sub(p).normalize();
-            const rdir = r.sub(p).normalize();
-            return ldir.dot(dir) - rdir.dot(dir);
-        });
+        points.sort( (l, r) =>
+            l.sub(p).normalize().dot(dir) - 
+            r.sub(p).normalize().dot(dir) );
         const np = points.pop();
         dir = np.sub(p).normalize();
         res.push(np);
