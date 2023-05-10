@@ -1,114 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Simplex solving visual</title>
-        
-        
-        <script type="application/javascript" language="javascript" src="main.js"></script>
-        
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simplex solving visual</title>
+    
+    <script type="application/javascript" language="javascript" src="main.js"></script>
+    <link rel="stylesheet" href="index.css">
 </head>
-<link rel="stylesheet" href="index.css">
-<body style="background-color: rgb(159, 103, 202);">
-
-    <!-- <table class="table_names"> 
-        <tbody>
-            <tr><td>Contributors:</td><td>Marthinus Prinsloo </td><td>| 578515 </td></tr>
-            <tr><td             ></td><td>Johannes Taute     </td><td>| 576361 </td></tr>
-            <tr><td             ></td><td>Zeldene van Vüren  </td><td>| 577115 </td></tr>
-            <tr><td             ></td><td>James Rudd         </td><td>| 578691 </td></tr>
-        </tbody>
-    </table>
-
-    <canvas id="canvas1" style="
-        background-color: rgb(161, 161, 161); 
-        width:  min(60vh, 60vw);
-        height: min(60vh, 60vw);
-        border-style: ridge;">        
-    </canvas>
-    <br>
-    <button onclick="
-        canvas_offset = new vec2(0,0); 
-        canvas_scale = new vec2(1,1);">reset view</button>
-    <button onclick="view_valid_zone()">view valid area</button>
-    <br><br>Load LP model from file: <input type="file" id="file-input" />
-    <br><br>
-    <table>
-        <tbody>
-            <tr id = "Z">
-                <td>
-                    <select id="minmax" onchange="update()">
-                        <option value="max">max z</option>
-                        <option value="min">min z</option>
-                    </select>
-                </td>
-                <td>= <input id="q1" type="number" value=1 onchange="update()"> * x1 + </td>
-                <td><input id="q2" type="number" value=1 onchange="update()"> * x2</td>
-            </tr>
-            <tr><td></td><td id="answer_line0"></td></tr>
-            <tr><td></td><td id="answer_line1"></td></tr>
-            <tr><td style="text-align: right;">X1</td><td id="answer_line2"></td></tr>
-            <tr><td style="text-align: right;">X2</td><td id="answer_line3"></td></tr>
-            <tr><td style="text-align: right;">Z </td><td id="answer_line4"></td></tr>
-        </tbody>
-    </table>
-    <table>Constraints : 
-        <tbody id = "ctbody"></tbody>
-        <td><button onclick = "add_constraint()">+</button></td>
-    </table>   
-</body> -->
 <body>
-    <div class="container">
-
-        <table class="table_names"> 
+    <div id="floating_body">
+        <table id="table_contributors"> 
             <tbody>
-                <tr>
-                    <td>Contributors:</td>
-                    <td>Marthinus Prinsloo</td>
-                    <td>| 578515</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Johannes Taute</td>
-                    <td>| 576361</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>Zeldene van Vüren</td>
-                    <td>| 577115</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td>James Rudd</td>
-                    <td>| 578691</td>
-                </tr>
+                <tr><td>Contributors:</td><td>Marthinus Prinsloo </td><td>578515 </td></tr>
+                <tr><td             ></td><td>Johannes Taute     </td><td>576361 </td></tr>
+                <tr><td             ></td><td>Zeldene van Vüren  </td><td>577115 </td></tr>
+                <tr><td             ></td><td>James Rudd         </td><td>578691 </td></tr>
             </tbody>
         </table>
-
-        <div class="canva_container">
+        <br>
+        <div id="canvas_container">
             <canvas id="canvas1"></canvas>
             <hr>
             <button onclick="canvas_offset = new vec2(0,0); canvas_scale = new vec2(1,1);">Reset View</button>
             <button onclick="view_valid_zone()">View Valid Area</button>
         </div>
         <br>
-        <br><br>
-        <div class="lp_container">
+        <div id="lp_container">
             Load LP model from file: <input type="file" id="file-input" />
             <br><br>
             <table>
                 <tbody>
                     <tr id="Z">
-                        <td>
+                        <td style="text-align: right;">
                             <select id="minmax" onchange="update()">
                                 <option value="max">max z</option>
                                 <option value="min">min z</option>
                             </select>
                         </td>
-                        <td>= <input id="q1" type="number" value="1" onchange="update()"> * x1 + </td>
-                        <td><input id="q2" type="number" value="1" onchange="update()"> * x2</td>
+                        <td>= <input id="q1" type="number" value="1" onchange="update()"> * x1 + 
+                              <input id="q2" type="number" value="1" onchange="update()"> * x2 </td>
                     </tr>
                     <tr>
                         <td></td>

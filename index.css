@@ -1,46 +1,39 @@
 body {
-    display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     font-family: Arial, sans-serif;
 }
 
-.container {
-    /* text-align: center; */
-    display: inline-block;
+#floating_body {
     padding: 20px;
+    display: block;
+    margin: 0 auto 0 auto;
     background-color: rgb(161, 161, 161);
     border-style: ridge;
-    /* max-width: min(60vh, 60vw); */
-    width: 80%;
-    /* height: 80%; */
+    text-align: center;
+    width: 85%;
 }
 
-.table_names{
+#table_contributors{
     padding: 20px;
     width: 100%;
-    /* height: 100%; */
     background-color: #f4f4f4;
     border-radius: 10px;
     margin-bottom: 20px;
     margin-top: 20px;
-    /* justify-content: center;
-    align-items: center; */
-    /* text-align: center; */
 }
 
-.table_names tbody{
-    /* justify-content: center; */
-    align-items: center;
-    /* text-align: center; */
-}
 #canvas1 {
-    height: 30%;
+    display: block;
+    margin: 0 auto 0 auto;
+    border-style: ridge;
+    width: min(60vh, 100vw);
+    height: min(60vh, 100vw);
 
 }
-.canva_container {
-    /* display: flex; */
+
+#canvas_container {
     justify-content: center;
     align-items: center;
     padding: 20px;
@@ -49,27 +42,26 @@ body {
     height: 100%;
 }
 
-.lp_container {
+#lp_container {
     padding: 20px;
     background-color: #f5f5f5;
     border-radius: 10px;
+    text-align: left;
+    display: inline-block;
 }
 
-.lp_container input[type="file"] {
+input[type="file"] {
     margin-bottom: 10px;
-}
-
-.lp_container table {
-    width: 100%;
-}
-
-.lp_container table td {
-    padding: 5px;
 }
 
 button {
     margin-bottom: 10px;
 }
+
+#minmax {
+
+}
+
 
 input[type="number"] {
     width: 50px;
