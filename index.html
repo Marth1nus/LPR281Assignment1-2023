@@ -88,47 +88,51 @@
             </table>
         </div>
 
-        <canvas id="canvas1"></canvas>
+        <div class="canva_container">
+            <canvas id="canvas1"></canvas>
+        </div>
         <br>
         <button onclick="canvas_offset = new vec2(0,0); canvas_scale = new vec2(1,1);">Reset View</button>
         <button onclick="view_valid_zone()">View Valid Area</button>
         <br><br>
-        Load LP model from file: <input type="file" id="file-input" />
-        <br><br>
-        <table>
-            <tbody>
-                <tr id="Z">
-                    <td>
-                        <select id="minmax" onchange="update()">
-                            <option value="max">max z</option>
-                            <option value="min">min z</option>
-                        </select>
-                    </td>
-                    <td>= <input id="q1" type="number" value="1" onchange="update()"> * x1 + </td>
-                    <td><input id="q2" type="number" value="1" onchange="update()"> * x2</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="answer_line0"></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td id="answer_line1"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;">X1</td>
-                    <td id="answer_line2"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;">X2</td>
-                    <td id="answer_line3"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;">Z</td>
-                    <td id="answer_line4"></td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="lp_container">
+            Load LP model from file: <input type="file" id="file-input" />
+            <br><br>
+            <table>
+                <tbody>
+                    <tr id="Z">
+                        <td>
+                            <select id="minmax" onchange="update()">
+                                <option value="max">max z</option>
+                                <option value="min">min z</option>
+                            </select>
+                        </td>
+                        <td>= <input id="q1" type="number" value="1" onchange="update()"> * x1 + </td>
+                        <td><input id="q2" type="number" value="1" onchange="update()"> * x2</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="answer_line0"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="answer_line1"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">X1</td>
+                        <td id="answer_line2"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">X2</td>
+                        <td id="answer_line3"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right;">Z</td>
+                        <td id="answer_line4"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <table>
             Constraints:
             <tbody id="ctbody"></tbody>

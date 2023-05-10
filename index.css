@@ -7,7 +7,7 @@ body {
 }
 
 .container {
-    text-align: center;
+    /* text-align: center; */
     padding: 20px;
     background-color: rgb(161, 161, 161);
     border-style: ridge;
@@ -18,10 +18,38 @@ body {
     padding: 20px;
     background-color: #f4f4f4;
     border-radius: 10px;
+    margin-bottom: 20px;
 }
 
 .table_names {
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
+}
+
+.canva_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+}
+
+.lp_container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+}
+
+.lp_container input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.lp_container table {
+    width: 100%;
+}
+
+.lp_container table td {
+    padding: 5px;
 }
 
 button {
